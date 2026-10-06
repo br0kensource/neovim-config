@@ -153,7 +153,9 @@ return {
           if vim.tbl_contains(ignored, ft) then return end
           if vim.api.nvim_buf_get_name(buf) == "" then return end
 
-          require("trouble").open({ mode = "symbols", focus = false })
+          if vim.o.columns >= 120 then
+            require("trouble").open({ mode = "symbols", focus = false })
+          end
         end,
       })
     end,
