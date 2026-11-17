@@ -72,6 +72,21 @@ return {
         },
         html = {},
         cssls = {},
+        tailwindcss = {
+          settings = {
+            tailwindCSS = {
+              -- Treat string arguments to these helpers as class lists, e.g. clsx('p-4', ...)
+              classFunctions = { "clsx", "cn", "cva", "tw", "twMerge", "twJoin" },
+              experimental = {
+                classRegex = {
+                  -- Strings inside an object assigned to `classes` / `fooClasses`:
+                  --   const classes = { root: 'flex gap-2', brand: '...' }
+                  { "[cC]lasses\\s*=\\s*\\{([^}]*)\\}", "[\"'`]([^\"'`]*)[\"'`]" },
+                },
+              },
+            },
+          },
+        },
         jsonls = {},
         clangd = {},
         sqls = {},
@@ -82,22 +97,15 @@ return {
     },
 
     config = function(_, opts)
-      local lspconfig = require("lspconfig")
       local blink = require("blink.cmp")
 
-      -- Unified Mason setup handler
+      for server_name, server_opts in pairs(opts.servers) do
+        server_opts.capabilities = blink.get_lsp_capabilities(server_opts.capabilities)
+        vim.lsp.config(server_name, server_opts)
+      end
+
       require("mason-lspconfig").setup({
-        ensure_installed = vim.tbl_filter(function(k)
-          return k ~= "hls"
-        end, vim.tbl_keys(opts.servers)),
-        handlers = {
-          function(server_name)
-            local server_opts = opts.servers[server_name] or {}
-            -- Inject natively from blink.cmp
-            server_opts.capabilities = blink.get_lsp_capabilities(server_opts.capabilities)
-            lspconfig[server_name].setup(server_opts)
-          end,
-        },
+        ensure_installed = vim.tbl_keys(opts.servers),
       })
 
       -- Manually set up hls, since we defer to the locally installed version
