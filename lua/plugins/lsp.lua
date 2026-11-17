@@ -79,9 +79,11 @@ return {
               classFunctions = { "clsx", "cn", "cva", "tw", "twMerge", "twJoin" },
               experimental = {
                 classRegex = {
-                  -- Strings inside an object assigned to `classes` / `fooClasses`:
+                  -- Strings inside an object assigned to `classes` / `fooClasses` / `variants` / `sizes`,
+                  -- optionally type-annotated and/or wrapped in tw(...):
                   --   const classes = { root: 'flex gap-2', brand: '...' }
-                  { "[cC]lasses\\s*=\\s*\\{([^}]*)\\}", "[\"'`]([^\"'`]*)[\"'`]" },
+                  --   const variants: Record<Variant, string> = tw({ primary: 'bg-blue-500' })
+                  { "(?:[cC]lasses|variants|sizes)\\s*(?::[^=]*)?=\\s*(?:tw\\()?\\{([^}]*)\\}", "[\"'`]([^\"'`]*)[\"'`]" },
                 },
               },
             },
